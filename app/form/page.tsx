@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function formatBirthday(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -44,13 +44,29 @@ export default function FormPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
+  useEffect(() => {
+    if (isSubmitting) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isSubmitting]);
+
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-[#530515] px-3 py-6 sm:px-4 sm:py-8">
+    <main className="relative flex min-h-screen min-h-[100dvh] items-center justify-center bg-[#530515] px-3 py-6 sm:px-4 sm:py-8">
       {isSubmitting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="flex flex-col items-center gap-6 rounded-2xl border-2 border-white bg-[#530515] px-10 py-8 text-white shadow-xl">
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            <p className="text-center font-[family-name:var(--font-rocket-raccoon)] text-xl">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          style={{ minHeight: "100dvh" }}
+          aria-live="polite"
+          aria-busy="true"
+          role="status"
+        >
+          <div className="flex max-w-sm flex-col items-center gap-5 rounded-2xl border-2 border-white bg-[#530515] px-6 py-8 text-white shadow-xl sm:gap-6 sm:px-10">
+            <div className="h-10 w-10 shrink-0 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            <p className="text-center font-[family-name:var(--font-rocket-raccoon)] text-lg sm:text-xl">
               Please wait
             </p>
             <p className="text-center text-sm text-white/80">
@@ -61,7 +77,8 @@ export default function FormPage() {
       )}
 
       <form
-        className="flex h-full w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-2xl border-2 border-white p-4 text-white sm:gap-6 sm:p-6 md:p-8"
+        className="flex w-full max-w-3xl flex-1 flex-col gap-4 overflow-y-auto rounded-2xl border-2 border-white p-4 text-white overscroll-contain sm:gap-6 sm:p-6 md:p-8"
+        style={{ maxHeight: "calc(100dvh - 2rem)" }}
         onSubmit={async (event) => {
           event.preventDefault();
           const form = event.currentTarget;
@@ -100,14 +117,27 @@ export default function FormPage() {
           if (Object.keys(newErrors).length > 0) return;
 
           setIsSubmitting(true);
+          setErrors((e) => ({ ...e, submit: "" }));
           try {
             formData.set("minAge", String(minAge));
             formData.set("maxAge", String(maxAge));
 
-            await fetch("/api/submissions", {
+            const res = await fetch("/api/submissions", {
               method: "POST",
               body: formData,
             });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+              setErrors({
+                submit:
+                  (data as { error?: string }).error ||
+                  data.details ||
+                  "Something went wrong. Please try again.",
+              });
+              return;
+            }
 
             form.reset();
             setBirthday("");

@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#530515]">
       <h1 className="text-[8rem] text-white font-[family-name:var(--font-rocket-raccoon)]">
-        shmooze
+        schmooze
       </h1>
       <Link
         href="/form"

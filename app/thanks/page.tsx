@@ -14,7 +14,7 @@ export default function ThanksPage() {
         href="/"
         className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#530515] transition hover:opacity-90"
       >
-        Back to shmooze
+        Back to schmooze
       </Link>
     </main>
   );
