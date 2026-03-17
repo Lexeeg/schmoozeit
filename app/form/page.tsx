@@ -78,6 +78,7 @@ export default function FormPage() {
           const hobbies = (formData.get("hobbies") as string)?.trim();
           const job = (formData.get("job") as string)?.trim();
           const levelOfJewish = (formData.get("levelOfJewish") as string)?.trim();
+          const openToLongDistance = (formData.get("openToLongDistance") as string)?.trim();
 
           const newErrors: Record<string, string> = {};
           if (!firstName) newErrors.firstName = "First name is required.";
@@ -93,6 +94,7 @@ export default function FormPage() {
           if (!hobbies) newErrors.hobbies = "Hobbies / interests are required.";
           if (!job) newErrors.job = "Job / work is required.";
           if (!levelOfJewish) newErrors.levelOfJewish = "Level of Jewish is required.";
+          if (!openToLongDistance) newErrors.openToLongDistance = "Please select Yes or No.";
 
           setErrors(newErrors);
           if (Object.keys(newErrors).length > 0) return;
@@ -332,25 +334,56 @@ export default function FormPage() {
           </div>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm uppercase tracking-wide text-white/80">
-            Level of Jewish *
-          </label>
-          <select
-            name="levelOfJewish"
-            required
-            className="w-full rounded-2xl border-2 border-white bg-[#530515] px-3 py-2.5 text-sm text-white outline-none focus:border-white/80 sm:px-6 sm:py-3 sm:text-base [&>option]:bg-[#530515] [&>option]:text-white"
-          >
-            <option value="">Select one</option>
-            <option value="Fully Observant">Fully Observant</option>
-            <option value="Trad + Modern">Trad + Modern</option>
-            <option value="Holiday Jew">Holiday Jew</option>
-            <option value="Spiritual / Reform">Spiritual / Reform</option>
-            <option value="Cultural Jew">Cultural Jew</option>
-          </select>
-          {errors.levelOfJewish && (
-            <p className="mt-1 text-xs text-red-200">{errors.levelOfJewish}</p>
-          )}
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm uppercase tracking-wide text-white/80">
+              Level of Jewish *
+            </label>
+            <select
+              name="levelOfJewish"
+              required
+              className="w-full rounded-2xl border-2 border-white bg-[#530515] px-3 py-2.5 text-sm text-white outline-none focus:border-white/80 sm:px-6 sm:py-3 sm:text-base [&>option]:bg-[#530515] [&>option]:text-white"
+            >
+              <option value="">Select one</option>
+              <option value="Fully Observant">Fully Observant</option>
+              <option value="Trad + Modern">Trad + Modern</option>
+              <option value="Holiday Jew">Holiday Jew</option>
+              <option value="Spiritual / Reform">Spiritual / Reform</option>
+              <option value="Cultural Jew">Cultural Jew</option>
+            </select>
+            {errors.levelOfJewish && (
+              <p className="mt-1 text-xs text-red-200">{errors.levelOfJewish}</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm uppercase tracking-wide text-white/80">
+              Open to long distance? *
+            </label>
+            <div className="flex gap-3">
+              <label className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border-2 border-white bg-[#530515] px-3 py-2.5 text-sm text-white has-[:checked]:bg-white has-[:checked]:text-[#530515] sm:py-3 sm:text-base">
+                <input
+                  type="radio"
+                  name="openToLongDistance"
+                  value="Yes"
+                  required
+                  className="sr-only"
+                />
+                Yes
+              </label>
+              <label className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border-2 border-white bg-[#530515] px-3 py-2.5 text-sm text-white has-[:checked]:bg-white has-[:checked]:text-[#530515] sm:py-3 sm:text-base">
+                <input
+                  type="radio"
+                  name="openToLongDistance"
+                  value="No"
+                  className="sr-only"
+                />
+                No
+              </label>
+            </div>
+            {errors.openToLongDistance && (
+              <p className="mt-1 text-xs text-red-200">{errors.openToLongDistance}</p>
+            )}
+          </div>
         </div>
 
         <button

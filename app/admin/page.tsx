@@ -16,6 +16,7 @@ type Submission = {
   hobbies: string | null;
   job: string | null;
   level_of_jewish: string | null;
+  open_to_long_distance: string | null;
   min_age: number | null;
   max_age: number | null;
   photo_names: string[] | null;
@@ -149,6 +150,12 @@ export default async function AdminPage() {
                       <p>
                         <span className="font-normal">Level of Jewish: </span>
                         <span className="font-semibold">{submission.level_of_jewish}</span>
+                      </p>
+                    )}
+                    {submission.open_to_long_distance && (
+                      <p>
+                        <span className="font-normal">Open to long distance: </span>
+                        <span className="font-semibold">{submission.open_to_long_distance}</span>
                       </p>
                     )}
                     {submission.instagram_url && (

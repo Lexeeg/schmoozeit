@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     const hobbies = formData.get("hobbies") as string | null;
     const job = formData.get("job") as string | null;
     const levelOfJewish = formData.get("levelOfJewish") as string | null;
+    const openToLongDistance = formData.get("openToLongDistance") as string | null;
     const minAgeRaw = formData.get("minAge") as string | null;
     const maxAgeRaw = formData.get("maxAge") as string | null;
 
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
         hobbies: hobbies ?? null,
         job: job ?? null,
         level_of_jewish: levelOfJewish ?? null,
+        open_to_long_distance: openToLongDistance ?? null,
         min_age: typeof minAge === "number" ? minAge : null,
         max_age: typeof maxAge === "number" ? maxAge : null,
         photo_names: uploadedPhotoPaths.length > 0 ? uploadedPhotoPaths : null,
