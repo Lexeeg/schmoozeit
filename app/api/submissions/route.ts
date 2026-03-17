@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const MAX_LONG_SIDE = 1200; // cap size for admin loading
 const SCALE = 0.8; // 20% lower resolution
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       const baseName = file.name.replace(/\s+/g, "-").replace(/\.[^.]+$/, "");
       const path = `${Date.now()}-${baseName}.${ext}`;
 
-      const { error: uploadError } = await supabaseAdmin.storage
+      const { error: uploadError } = await getSupabaseAdmin().storage
         .from("Photos")
         .upload(path, outputBuffer, {
           contentType: ext === "jpg" ? "image/jpeg" : `image/${ext}`,
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
       uploadedPhotoPaths.push(path);
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("submissions")
       .insert({
         first_name: firstName ?? null,

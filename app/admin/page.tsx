@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { AdminPhotoCarousel } from "@/components/AdminPhotoCarousel";
 import { AdminLogin } from "@/components/AdminLogin";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 type Submission = {
   id: string;
@@ -65,7 +65,7 @@ export default async function AdminPage() {
     return <AdminLogin />;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("submissions")
     .select("*")
     .order("created_at", { ascending: false });
