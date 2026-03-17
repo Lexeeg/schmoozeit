@@ -112,9 +112,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, submission: data });
   } catch (err) {
+    const message = err instanceof Error ? err.message : "Unexpected error while saving submission";
     console.error("Error in POST /api/submissions:", err);
     return NextResponse.json(
-      { error: "Unexpected error while saving submission" },
+      { error: "Failed to save", details: message },
       { status: 500 },
     );
   }

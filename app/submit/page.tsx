@@ -36,7 +36,7 @@ function isValidPhone(phone: string): boolean {
   return false;
 }
 
-export default function FormPage() {
+export default function SubmitPage() {
   const [minAge, setMinAge] = useState(19);
   const [maxAge, setMaxAge] = useState(40);
   const [birthday, setBirthday] = useState("");
