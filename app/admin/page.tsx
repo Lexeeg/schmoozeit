@@ -1,8 +1,7 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
-import { AdminPhotoCarousel } from "@/components/AdminPhotoCarousel";
-import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminLogin } from "@/components/AdminLogin";
+import { AdminSubmissionsFilters } from "@/components/AdminSubmissionsFilters";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 type Submission = {
@@ -90,6 +89,38 @@ export default async function AdminPage() {
 
   const submissions = (data ?? []) as Submission[];
 
+  const cards = submissions.map((submission) => {
+    const age = calculateAge(submission.birthday);
+    const displayName = [
+      submission.first_name,
+      submission.last_name,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const photoNames = submission.photo_names ?? [];
+    const photoUrls = photoNames.map((name) => getPhotoUrl(name));
+
+    return {
+      id: submission.id,
+      created_at: submission.created_at,
+      displayName: displayName || "",
+      age,
+      photoUrls,
+      living_location: submission.living_location,
+      originally_from: submission.originally_from,
+      job: submission.job,
+      hobbies: submission.hobbies,
+      level_of_jewish: submission.level_of_jewish,
+      open_to_long_distance: submission.open_to_long_distance,
+      dating_preferences: submission.dating_preferences,
+      instagram_url: submission.instagram_url,
+      min_age: submission.min_age,
+      max_age: submission.max_age,
+      phone_number: submission.phone_number,
+    };
+  });
+
   return (
     <main className="flex min-h-screen flex-col items-center bg-[#530515] px-3 py-6 text-white sm:px-4 sm:py-8">
       <div className="w-full max-w-6xl">
@@ -108,116 +139,13 @@ export default async function AdminPage() {
           </p>
         )}
 
-        {submissions.length === 0 ? (
+        {cards.length === 0 ? (
           <p className="text-sm text-white/70">
             No submissions yet. Once someone fills out the form, they&apos;ll
             appear here.
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {submissions.map((submission) => {
-              const age = calculateAge(submission.birthday);
-              const displayName = [
-                submission.first_name,
-                submission.last_name,
-              ]
-                .filter(Boolean)
-                .join(" ");
-
-              const photos = submission.photo_names ?? [];
-              const photoUrls = photos.map((name) => getPhotoUrl(name));
-
-              return (
-                <section
-                  key={submission.id}
-                  className="rounded-2xl border border-white/20 bg-black/20 p-3 sm:p-4"
-                >
-                  <AdminPhotoCarousel
-                    urls={photoUrls}
-                    alt={displayName || "Submission photo"}
-                  />
-
-                  <div className="mb-2">
-                    <h2 className="text-base font-semibold sm:text-xl">
-                      {displayName || "Unnamed"}
-                      {age !== null && <span>, {age}</span>}
-                    </h2>
-                  </div>
-
-                  <div className="mb-3 flex items-center justify-end">
-                    <AdminDeleteButton
-                      id={submission.id}
-                      name={displayName || "this submission"}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5 text-xs text-white sm:text-sm">
-                    {submission.living_location && (
-                      <p>
-                        <span className="font-normal">Currently lives in: </span>
-                        <span className="font-semibold">{submission.living_location}</span>
-                      </p>
-                    )}
-                    {submission.originally_from && (
-                      <p>
-                        <span className="font-normal">From: </span>
-                        <span className="font-semibold">{submission.originally_from}</span>
-                      </p>
-                    )}
-                    {submission.job && (
-                      <p>
-                        <span className="font-normal">Job / work: </span>
-                        <span className="font-semibold">{submission.job}</span>
-                      </p>
-                    )}
-                    {submission.hobbies && (
-                      <p>
-                        <span className="font-normal">Hobbies / interests: </span>
-                        <span className="font-semibold">{submission.hobbies}</span>
-                      </p>
-                    )}
-                    {submission.level_of_jewish && (
-                      <p>
-                        <span className="font-normal">Level of Jewish: </span>
-                        <span className="font-semibold">{submission.level_of_jewish}</span>
-                      </p>
-                    )}
-                    {submission.open_to_long_distance && (
-                      <p>
-                        <span className="font-normal">Open to long distance: </span>
-                        <span className="font-semibold">{submission.open_to_long_distance}</span>
-                      </p>
-                    )}
-                    {submission.dating_preferences && (
-                      <p>
-                        <span className="font-normal">Dating preferences: </span>
-                        <span className="font-semibold">{submission.dating_preferences}</span>
-                      </p>
-                    )}
-                    {submission.instagram_url && (
-                      <p>
-                        <span className="font-normal">Instagram: </span>
-                        <span className="font-semibold">{submission.instagram_url}</span>
-                      </p>
-                    )}
-                    {submission.min_age !== null &&
-                      submission.max_age !== null && (
-                        <p>
-                          <span className="font-normal">Preferred age range: </span>
-                          <span className="font-semibold">{submission.min_age}–{submission.max_age}</span>
-                        </p>
-                      )}
-                    {submission.phone_number && (
-                      <p>
-                        <span className="font-normal">Phone: </span>
-                        <span className="font-semibold">{submission.phone_number}</span>
-                      </p>
-                    )}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
+          <AdminSubmissionsFilters submissions={cards} />
         )}
       </div>
     </main>
