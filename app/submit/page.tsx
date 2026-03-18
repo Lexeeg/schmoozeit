@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,7 +99,15 @@ export default function SubmitPage() {
     "idle" | "compressing" | "uploading" | "success"
   >("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [toastMessages, setToastMessages] = useState<string[]>([]);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(null);
   const router = useRouter();
+
+  const showToast = useCallback((msgs: string | string[]) => {
+    setToastMessages(Array.isArray(msgs) ? msgs : [msgs]);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastMessages([]), 5000);
+  }, []);
 
   const isSubmitting = submitState !== "idle" && submitState !== "success";
 
@@ -194,6 +202,7 @@ export default function SubmitPage() {
 
     setErrors(errs);
     if (Object.keys(errs).length > 0) {
+      showToast(Object.values(errs));
       // Scroll to the first field with an error
       const firstKey = Object.keys(errs)[0];
       const el = form.querySelector(`[name="${firstKey}"]`) ?? document.getElementById(`field-${firstKey}`);
@@ -231,7 +240,9 @@ export default function SubmitPage() {
 
       if (!res.ok) {
         setSubmitState("idle");
-        setErrors({ submit: data?.details || data?.error || "Something went wrong. Please try again." });
+        const msg = data?.details || data?.error || "Something went wrong. Please try again.";
+        setErrors({ submit: msg });
+        showToast(msg);
         return;
       }
 
@@ -243,6 +254,7 @@ export default function SubmitPage() {
     } catch {
       setSubmitState("idle");
       setErrors({ submit: "Network error. Please try again." });
+      showToast("Network error. Please try again.");
     }
   }
 
@@ -276,6 +288,7 @@ export default function SubmitPage() {
 
       <form
         onSubmit={handleSubmit}
+        noValidate
         className="my-auto flex w-full max-w-3xl flex-col gap-4 rounded-2xl border-2 border-border p-5 sm:gap-6 sm:p-8"
       >
         <div className="flex items-center justify-between">
@@ -481,6 +494,59 @@ export default function SubmitPage() {
           this purpose.
         </p>
       </form>
+
+      {/* Toast */}
+      <div
+        className="fixed inset-x-0 top-5 z-50 mx-auto w-[calc(100%-2rem)] max-w-3xl"
+        style={{
+          opacity: toastMessages.length > 0 ? 1 : 0,
+          transform: `translateY(${toastMessages.length > 0 ? "0" : "-12px"}) scale(${toastMessages.length > 0 ? 1 : 0.95})`,
+          transition: "opacity 200ms cubic-bezier(0.23,1,0.32,1), transform 200ms cubic-bezier(0.23,1,0.32,1)",
+          pointerEvents: toastMessages.length > 0 ? "auto" : "none",
+        }}
+        role="alert"
+      >
+        <div className="rounded-2xl border border-white/10 bg-[#2a0008] px-4 py-3 shadow-2xl backdrop-blur-sm">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-destructive/20 text-xs text-destructive">!</span>
+            <ul className="flex-1 space-y-0.5">
+              {toastMessages.slice(0, 3).map((msg, i) => (
+                <li
+                  key={i}
+                  className="text-sm text-white/90"
+                  style={{
+                    opacity: toastMessages.length > 0 ? 1 : 0,
+                    transform: toastMessages.length > 0 ? "translateY(0)" : "translateY(-4px)",
+                    transition: `opacity 250ms cubic-bezier(0.23,1,0.32,1) ${i * 50}ms, transform 250ms cubic-bezier(0.23,1,0.32,1) ${i * 50}ms`,
+                  }}
+                >
+                  {msg}
+                </li>
+              ))}
+              {toastMessages.length > 3 && (
+                <li
+                  className="text-xs text-white/50"
+                  style={{
+                    opacity: toastMessages.length > 0 ? 1 : 0,
+                    transition: `opacity 250ms cubic-bezier(0.23,1,0.32,1) ${3 * 50}ms`,
+                  }}
+                >
+                  +{toastMessages.length - 3} more
+                </li>
+              )}
+            </ul>
+            <button
+              onClick={() => setToastMessages([])}
+              className="shrink-0 rounded-full p-1 text-white/40 transition-colors duration-150 hover:bg-white/10 hover:text-white/70"
+              aria-label="Dismiss"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M3 3l8 8M11 3l-8 8" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
