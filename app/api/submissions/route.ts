@@ -153,7 +153,7 @@ export async function POST(request: Request) {
       // Process with Sharp — reject if it fails (don't upload raw)
       let outputBuffer: Buffer;
       try {
-        const image = sharp(buffer);
+        const image = sharp(buffer).rotate(); // auto-orient from EXIF before resize
         const meta = await image.metadata();
         const w = meta.width ?? 0;
         const h = meta.height ?? 0;

@@ -63,6 +63,17 @@
     @apply bg-background text-foreground;
     font-family: Arial, Helvetica, sans-serif;
   }
+  button,
+  a,
+  select,
+  label,
+  input[type="radio"],
+  input[type="checkbox"],
+  input[type="file"],
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 @keyframes draw {
