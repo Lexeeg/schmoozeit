@@ -51,14 +51,14 @@ export function AdminNotesEditor({
         onChange={(e) => setNote(e.target.value)}
         rows={3}
         placeholder="Try: first impression, vibe, what worked, next steps…"
-        className="w-full resize-none rounded-xl border border-black/10 bg-[#f3eadb] px-3 py-2 text-xs text-black outline-none focus:border-black/30 focus:ring-0"
+        className="w-full resize-none border border-black/10 bg-[#f3eadb] px-3 py-2 text-xs text-black outline-none focus:border-black/30 focus:ring-0"
       />
       <div className="mt-2 flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="rounded-full border border-black/20 bg-white px-4 py-1.5 text-xs font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="border border-black/20 bg-white px-4 py-1.5 text-xs font-semibold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save"}
         </button>
