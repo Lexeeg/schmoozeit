@@ -156,6 +156,7 @@ export default function SubmitPage() {
       job: get("job"),
       levelOfJewish: get("levelOfJewish"),
       openToLongDistance: get("openToLongDistance"),
+      datingPreference: get("datingPreference"),
     };
     const photos = fd.getAll("photos") as File[];
 
@@ -199,6 +200,8 @@ export default function SubmitPage() {
     if (!fields.job) errs.job = "Job / work is required.";
     if (!fields.levelOfJewish) errs.levelOfJewish = "Level of Jewish is required.";
     if (!fields.openToLongDistance) errs.openToLongDistance = "Please select Yes or No.";
+    if (!fields.datingPreference) errs.datingPreference = "Dating preference is required.";
+    else if (!["Men", "Women", "Both"].includes(fields.datingPreference)) errs.datingPreference = "Select a valid dating preference.";
 
     setErrors(errs);
     if (Object.keys(errs).length > 0) {
@@ -233,6 +236,7 @@ export default function SubmitPage() {
       fd.delete("phoneLocal");
       fd.set("minAge", String(ageRange[0]));
       fd.set("maxAge", String(ageRange[1]));
+      fd.set("datingPreference", fields.datingPreference);
 
       setSubmitState("uploading");
       const res = await fetch("/api/submissions", { method: "POST", body: fd });
@@ -446,8 +450,42 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        {/* Jewish & Long Distance */}
-        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+        {/* Long Distance + Dating Preferences + Level of Jewish (all on one line on desktop) */}
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
+          <div>
+            <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Open to long distance? *</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
+                <input type="radio" name="openToLongDistance" value="Yes" required className="sr-only" />
+                Yes
+              </label>
+              <label className="flex w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
+                <input type="radio" name="openToLongDistance" value="No" className="sr-only" />
+                No
+              </label>
+            </div>
+            <FieldError message={errors.openToLongDistance} />
+          </div>
+
+          <div>
+            <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Dating preferences *</Label>
+            <div className="flex flex-wrap gap-2 md:flex-nowrap md:gap-2">
+              <label className="flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
+                <input type="radio" name="datingPreference" value="Men" required className="sr-only" />
+                Men
+              </label>
+              <label className="flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
+                <input type="radio" name="datingPreference" value="Women" className="sr-only" />
+                Women
+              </label>
+              <label className="flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
+                <input type="radio" name="datingPreference" value="Both" className="sr-only" />
+                Both
+              </label>
+            </div>
+            <FieldError message={errors.datingPreference} />
+          </div>
+
           <div>
             <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Level of Jewish *</Label>
             <select
@@ -463,20 +501,6 @@ export default function SubmitPage() {
               <option value="Cultural Jew">Cultural Jew</option>
             </select>
             <FieldError message={errors.levelOfJewish} />
-          </div>
-          <div>
-            <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Open to long distance? *</Label>
-            <div className="flex gap-3">
-              <label className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border-2 border-input bg-background px-3 py-2.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:py-3 sm:text-base">
-                <input type="radio" name="openToLongDistance" value="Yes" required className="sr-only" />
-                Yes
-              </label>
-              <label className="flex flex-1 cursor-pointer items-center justify-center rounded-2xl border-2 border-input bg-background px-3 py-2.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:py-3 sm:text-base">
-                <input type="radio" name="openToLongDistance" value="No" className="sr-only" />
-                No
-              </label>
-            </div>
-            <FieldError message={errors.openToLongDistance} />
           </div>
         </div>
 

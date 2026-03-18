@@ -24,6 +24,7 @@ const VALID_JEWISH_LEVELS = new Set([
   "Spiritual / Reform",
   "Cultural Jew",
 ]);
+const VALID_DATING_PREFERENCES = new Set(["Men", "Women", "Both"]);
 
 function stripHtml(s: string): string {
   return s.replace(/<[^>]*>/g, "");
@@ -87,6 +88,7 @@ export async function POST(request: Request) {
     const job = sanitizeString(formData.get("job") as string | null);
     const levelOfJewish = sanitizeString(formData.get("levelOfJewish") as string | null, 50);
     const openToLongDistance = sanitizeString(formData.get("openToLongDistance") as string | null, 10);
+    const datingPreference = sanitizeString(formData.get("datingPreference") as string | null, 20);
     const minAgeRaw = formData.get("minAge") as string | null;
     const maxAgeRaw = formData.get("maxAge") as string | null;
 
@@ -107,6 +109,9 @@ export async function POST(request: Request) {
     }
     if (!openToLongDistance || !["Yes", "No"].includes(openToLongDistance)) {
       errors.push("Open to long distance must be Yes or No");
+    }
+    if (!datingPreference || !VALID_DATING_PREFERENCES.has(datingPreference)) {
+      errors.push("Dating preference must be Men, Women, or Both");
     }
 
     const minAge = minAgeRaw ? Number(minAgeRaw) : null;
@@ -207,6 +212,7 @@ export async function POST(request: Request) {
         job: job,
         level_of_jewish: levelOfJewish,
         open_to_long_distance: openToLongDistance,
+        dating_preferences: datingPreference,
         min_age: typeof minAge === "number" ? minAge : null,
         max_age: typeof maxAge === "number" ? maxAge : null,
         photo_names: uploadedPhotoPaths.length > 0 ? uploadedPhotoPaths : null,

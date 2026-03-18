@@ -19,6 +19,7 @@ type Submission = {
   job: string | null;
   level_of_jewish: string | null;
   open_to_long_distance: string | null;
+  dating_preferences: string | null;
   min_age: number | null;
   max_age: number | null;
   photo_names: string[] | null;
@@ -185,6 +186,12 @@ export default async function AdminPage() {
                       <p>
                         <span className="font-normal">Open to long distance: </span>
                         <span className="font-semibold">{submission.open_to_long_distance}</span>
+                      </p>
+                    )}
+                    {submission.dating_preferences && (
+                      <p>
+                        <span className="font-normal">Dating preferences: </span>
+                        <span className="font-semibold">{submission.dating_preferences}</span>
                       </p>
                     )}
                     {submission.instagram_url && (
