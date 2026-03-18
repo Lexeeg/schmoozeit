@@ -169,6 +169,12 @@ export default async function AdminPage() {
                         <span className="font-semibold">{submission.job}</span>
                       </p>
                     )}
+                    {submission.hobbies && (
+                      <p>
+                        <span className="font-normal">Hobbies / interests: </span>
+                        <span className="font-semibold">{submission.hobbies}</span>
+                      </p>
+                    )}
                     {submission.level_of_jewish && (
                       <p>
                         <span className="font-normal">Level of Jewish: </span>
