@@ -23,6 +23,7 @@ type Submission = {
   max_age: number | null;
   photo_names: string[] | null;
   admin_notes: string | null;
+  admin_setup_status: "success" | "failure" | null;
 };
 
 function verifyAdminCookie(cookieValue: string | undefined): boolean {
@@ -120,6 +121,7 @@ export default async function AdminPage() {
       max_age: submission.max_age,
       phone_number: submission.phone_number,
       admin_notes: submission.admin_notes ?? null,
+      admin_setup_status: submission.admin_setup_status ?? null,
     };
   });
 

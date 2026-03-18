@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 export function AdminNotesEditor({
   id,
   initialNote,
+  textareaRows,
+  showLabel,
 }: {
   id: string;
   initialNote: string | null;
+  textareaRows?: number;
+  showLabel?: boolean;
 }) {
   const [note, setNote] = useState(initialNote ?? "");
   const [saving, setSaving] = useState(false);
@@ -30,7 +34,11 @@ export function AdminNotesEditor({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data?.error || data?.details || "Failed to save notes.");
+        const msg =
+          data?.details ||
+          data?.error ||
+          `Failed to save notes (HTTP ${res.status}).`;
+        setError(msg);
         return;
       }
       setSavedAt(new Date().toLocaleTimeString());
@@ -43,13 +51,15 @@ export function AdminNotesEditor({
 
   return (
     <div className="mt-3">
-      <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-white/70">
-        Notes
-      </label>
+      {showLabel !== false && (
+        <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-black/70">
+          Notes
+        </label>
+      )}
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        rows={3}
+        rows={textareaRows ?? 3}
         placeholder="Try: first impression, vibe, what worked, next steps…"
         className="w-full resize-none border border-black/10 bg-[#f3eadb] px-3 py-2 text-xs text-black outline-none focus:border-black/30 focus:ring-0"
       />
