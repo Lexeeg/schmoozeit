@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { AdminPhotoCarousel } from "@/components/AdminPhotoCarousel";
+import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminLogin } from "@/components/AdminLogin";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -140,6 +141,13 @@ export default async function AdminPage() {
                       {displayName || "Unnamed"}
                       {age !== null && <span>, {age}</span>}
                     </h2>
+                  </div>
+
+                  <div className="mb-3 flex items-center justify-end">
+                    <AdminDeleteButton
+                      id={submission.id}
+                      name={displayName || "this submission"}
+                    />
                   </div>
 
                   <div className="space-y-1.5 text-xs text-white sm:text-sm">

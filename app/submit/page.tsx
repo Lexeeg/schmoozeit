@@ -95,17 +95,28 @@ export default function SubmitPage() {
   const [birthDay, setBirthDay] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [countryCode, setCountryCode] = useState("+1");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<
+    "idle" | "compressing" | "uploading" | "success"
+  >("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
+  const isSubmitting = submitState !== "idle" && submitState !== "success";
+
   useEffect(() => {
-    if (!isSubmitting) return;
+    if (submitState === "idle") return;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isSubmitting]);
+  }, [submitState]);
+
+  // Navigate after success with a brief delay so the user sees the confirmation
+  useEffect(() => {
+    if (submitState !== "success") return;
+    const timer = setTimeout(() => router.push("/thanks"), 1200);
+    return () => clearTimeout(timer);
+  }, [submitState, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -190,8 +201,8 @@ export default function SubmitPage() {
       return;
     }
 
-    setIsSubmitting(true);
     setErrors({});
+    setSubmitState("compressing");
     try {
       // Compress photos before sending
       fd.delete("photos");
@@ -214,10 +225,12 @@ export default function SubmitPage() {
       fd.set("minAge", String(ageRange[0]));
       fd.set("maxAge", String(ageRange[1]));
 
+      setSubmitState("uploading");
       const res = await fetch("/api/submissions", { method: "POST", body: fd });
       const data = (await res.json().catch(() => ({}))) as { error?: string; details?: string };
 
       if (!res.ok) {
+        setSubmitState("idle");
         setErrors({ submit: data?.details || data?.error || "Something went wrong. Please try again." });
         return;
       }
@@ -226,22 +239,37 @@ export default function SubmitPage() {
       setBirthMonth("");
       setBirthDay("");
       setBirthYear("");
-      router.push("/thanks");
+      setSubmitState("success");
     } catch {
+      setSubmitState("idle");
       setErrors({ submit: "Network error. Please try again." });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
   return (
     <main className="flex min-h-dvh flex-col items-center px-4 py-6 sm:py-10">
-      {isSubmitting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" role="status" aria-busy="true">
-          <div className="flex flex-col items-center gap-5 rounded-2xl border-2 border-border bg-background px-8 py-8 shadow-xl">
-            <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-center font-[family-name:var(--font-rocket-raccoon)] text-lg">Please wait</p>
-            <p className="text-center text-sm text-muted-foreground">Uploading your photos and saving your info...</p>
+      {submitState !== "idle" && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 transition-opacity duration-300"
+          role="status"
+          aria-busy={submitState !== "success"}
+        >
+          <div className="flex flex-col items-center gap-5 rounded-2xl border-2 border-border bg-background px-10 py-10 shadow-xl">
+            {submitState === "success" ? (
+              <>
+                <svg className="h-12 w-12 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 13l4 4L19 7" className="animate-[draw_0.4s_ease-out_forwards]" style={{ strokeDasharray: 24, strokeDashoffset: 24 }} />
+                </svg>
+                <p className="text-center font-[family-name:var(--font-rocket-raccoon)] text-xl">You&apos;re in!</p>
+              </>
+            ) : (
+              <>
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-center font-[family-name:var(--font-rocket-raccoon)] text-lg">
+                  {submitState === "compressing" ? "Preparing your photo..." : "Sending to Yenta..."}
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -439,8 +467,13 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        <Button type="submit" className="mt-2 h-auto w-full rounded-full border-2 border-primary px-10 py-3 text-base font-semibold sm:w-auto sm:text-lg">
-          SUBMIT
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="mt-2 h-auto w-full rounded-full border-2 border-primary px-10 py-3 text-base font-semibold sm:w-auto sm:text-lg"
+          style={isSubmitting ? { opacity: 0.4, pointerEvents: "none" } : undefined}
+        >
+          {isSubmitting ? "SUBMITTING..." : "SUBMIT"}
         </Button>
 
         <p className="text-sm text-muted-foreground">

@@ -64,3 +64,9 @@
     font-family: Arial, Helvetica, sans-serif;
   }
 }
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
