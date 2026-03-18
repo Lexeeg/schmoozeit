@@ -130,12 +130,7 @@ export default function FormPage() {
             const data = await res.json().catch(() => ({})) as { error?: string; details?: string };
 
             if (!res.ok) {
-              const msg =
-                data?.details ||
-                data?.error ||
-                (res.status === 500
-                  ? "Server error. On the live site, add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel → Settings → Environment Variables, then redeploy."
-                  : "Something went wrong. Please try again.");
+              const msg = data?.error || "Something went wrong. Please try again.";
               setErrors({ submit: msg });
               return;
             }
@@ -146,8 +141,7 @@ export default function FormPage() {
           } catch (err) {
             console.error(err);
             setErrors({
-              submit:
-                "Network or server error. If this is the live site, check Vercel env vars (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY) and redeploy.",
+              submit: "Network error. Please check your connection and try again.",
             });
           } finally {
             setIsSubmitting(false);

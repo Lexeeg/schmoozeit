@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { cookies } from "next/headers";
 import { AdminPhotoCarousel } from "@/components/AdminPhotoCarousel";
 import { AdminLogin } from "@/components/AdminLogin";
@@ -22,10 +23,26 @@ type Submission = {
   photo_names: string[] | null;
 };
 
+function verifyAdminCookie(cookieValue: string | undefined): boolean {
+  const adminSecret = process.env.ADMIN_SESSION_SECRET;
+  if (!adminSecret || !cookieValue) return false;
+  const expected = crypto
+    .createHmac("sha256", adminSecret)
+    .update("admin_verified")
+    .digest("hex");
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(cookieValue),
+      Buffer.from(expected),
+    );
+  } catch {
+    return false;
+  }
+}
+
 function calculateAge(birthday: string | null): number | null {
   if (!birthday) return null;
 
-  // Expecting DD/MM/YYYY but fall back if format is different
   let day: number, month: number, year: number;
   const parts = birthday.split(/[\/\-]/);
   if (parts.length === 3) {
@@ -52,17 +69,15 @@ function calculateAge(birthday: string | null): number | null {
 }
 
 function getPhotoUrl(name: string): string {
-  // Assumes you will upload photos to a public Supabase Storage bucket called "Photos"
-  // and that the file name stored in `photo_names` matches the object name in that bucket.
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!baseUrl) return "";
-  return `${baseUrl}/storage/v1/object/public/Photos/${encodeURIComponent(name)}`;
+  return `${baseUrl}/storage/v1/object/public/submission-photos/${encodeURIComponent(name)}`;
 }
 
 export default async function AdminPage() {
   const cookieStore = await cookies();
   const verified = cookieStore.get("admin_verified")?.value;
-  if (verified !== "true") {
+  if (!verifyAdminCookie(verified)) {
     return <AdminLogin />;
   }
 

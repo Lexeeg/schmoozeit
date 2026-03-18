@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LevelOfJewish {
+  FullyObservant  @map("Fully Observant")
+  TradModern      @map("Trad + Modern")
+  HolidayJew      @map("Holiday Jew")
+  SpiritualReform @map("Spiritual / Reform")
+  CulturalJew     @map("Cultural Jew")
+
+  @@map("level_of_jewish_enum")
+}
+
+enum LongDistance {
+  Yes
+  No
+
+  @@map("long_distance_enum")
+}
+
+model Submission {
+  id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt          DateTime      @default(now()) @map("created_at")
+  firstName          String        @map("first_name")
+  lastName           String        @map("last_name")
+  birthday           String        @db.VarChar(10)
+  phoneNumber        String        @map("phone_number") @db.VarChar(20)
+  instagramUrl       String        @map("instagram_url")
+  livingLocation     String        @map("living_location")
+  originallyFrom     String        @map("originally_from")
+  hobbies            String
+  job                String
+  levelOfJewish      LevelOfJewish @map("level_of_jewish")
+  openToLongDistance  LongDistance  @map("open_to_long_distance")
+  minAge             Int?          @map("min_age")
+  maxAge             Int?          @map("max_age")
+  photoNames         String[]      @map("photo_names")
+
+  @@map("submissions")
+}

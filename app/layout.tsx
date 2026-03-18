@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Geist } from "next/font/google";
 import "./globals.css";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const rocketRaccoon = localFont({
   src: "./fonts/RocketRaccoonFreeRegular-woowx.ttf",
@@ -18,12 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${rocketRaccoon.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={`${geist.variable} ${rocketRaccoon.variable}`}>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
