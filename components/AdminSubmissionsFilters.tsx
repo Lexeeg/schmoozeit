@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AdminPhotoCarousel } from "@/components/AdminPhotoCarousel";
 import { AdminDeleteButton } from "@/components/AdminDeleteButton";
+import { AdminNotesEditor } from "@/components/AdminNotesEditor";
 
 type CardSubmission = {
   id: string;
@@ -21,6 +22,7 @@ type CardSubmission = {
   min_age: number | null;
   max_age: number | null;
   phone_number: string | null;
+  admin_notes: string | null;
 };
 
 function inAgeGroup(age: number | null, group: string): boolean {
@@ -265,6 +267,11 @@ export function AdminSubmissionsFilters({
                   </p>
                 )}
               </div>
+
+              <AdminNotesEditor
+                id={submission.id}
+                initialNote={submission.admin_notes}
+              />
             </section>
           ))}
         </div>

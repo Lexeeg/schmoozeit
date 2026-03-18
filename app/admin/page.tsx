@@ -22,6 +22,7 @@ type Submission = {
   min_age: number | null;
   max_age: number | null;
   photo_names: string[] | null;
+  admin_notes: string | null;
 };
 
 function verifyAdminCookie(cookieValue: string | undefined): boolean {
@@ -118,6 +119,7 @@ export default async function AdminPage() {
       min_age: submission.min_age,
       max_age: submission.max_age,
       phone_number: submission.phone_number,
+      admin_notes: submission.admin_notes ?? null,
     };
   });
 
