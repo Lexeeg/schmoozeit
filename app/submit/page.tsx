@@ -475,7 +475,7 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Dating preferences *</Label>
+            <Label className="mb-2 text-sm uppercase tracking-wide text-muted-foreground">Interested in *</Label>
             <div className="flex flex-wrap gap-2 md:flex-nowrap md:gap-2">
               <label className="flex cursor-pointer items-center justify-center whitespace-nowrap rounded-2xl border-2 border-input bg-background px-2 py-1.5 text-sm transition-colors has-[:checked]:bg-primary has-[:checked]:text-primary-foreground hover:bg-foreground/10 sm:px-2.5 sm:py-2 sm:text-sm">
                 <input type="radio" name="datingPreference" value="Men" required className="sr-only" />

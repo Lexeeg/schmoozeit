@@ -79,6 +79,8 @@ export function AdminSubmissionsFilters({
   const [ageGroup, setAgeGroup] = useState<
     "all" | "18-25" | "25-30" | "30-35" | "35-40"
   >("all");
+  const [jewishLevel, setJewishLevel] = useState<string>("all");
+  const [longDistance, setLongDistance] = useState<"all" | "Yes" | "No">("all");
   const [notesForId, setNotesForId] = useState<string | null>(null);
   const router = useRouter();
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
@@ -99,9 +101,17 @@ export function AdminSubmissionsFilters({
 
       if (!inAgeGroup(s.age, ageGroup)) return false;
 
+      if (jewishLevel !== "all") {
+        if (s.level_of_jewish !== jewishLevel) return false;
+      }
+
+      if (longDistance !== "all") {
+        if (s.open_to_long_distance !== longDistance) return false;
+      }
+
       return true;
     });
-  }, [ageGroup, datingPref, location, submissions]);
+  }, [ageGroup, datingPref, jewishLevel, location, longDistance, submissions]);
 
   async function loadPairStatuses(fromId: string) {
     const res = await fetch(
@@ -179,10 +189,10 @@ export function AdminSubmissionsFilters({
 
   return (
     <div>
-      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+      <div className="mb-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <div>
           <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/70">
-            Dating preference
+            Interested in
           </label>
           <div className="relative">
             <select
@@ -276,6 +286,67 @@ export function AdminSubmissionsFilters({
               <option value="25-30">25-30</option>
               <option value="30-35">30-35</option>
               <option value="35-40">35-40</option>
+            </select>
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+            >
+              <path d="M6 8l4 4 4-4" />
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/70">
+            Level of Jewish
+          </label>
+          <div className="relative">
+            <select
+              value={jewishLevel}
+              onChange={(e) => setJewishLevel(e.target.value)}
+              className="w-full appearance-none rounded-2xl border border-white/20 bg-black/20 px-4 py-3 pr-10 text-sm text-white outline-none focus:border-white/40"
+            >
+              <option value="all">No filter</option>
+              <option value="Fully Observant">Fully Observant</option>
+              <option value="Trad + Modern">Trad + Modern</option>
+              <option value="Holiday Jew">Holiday Jew</option>
+              <option value="Spiritual / Reform">Spiritual / Reform</option>
+              <option value="Cultural Jew">Cultural Jew</option>
+            </select>
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+            >
+              <path d="M6 8l4 4 4-4" />
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/70">
+            Long distance
+          </label>
+          <div className="relative">
+            <select
+              value={longDistance}
+              onChange={(e) =>
+                setLongDistance(e.target.value as "all" | "Yes" | "No")
+              }
+              className="w-full appearance-none rounded-2xl border border-white/20 bg-black/20 px-4 py-3 pr-10 text-sm text-white outline-none focus:border-white/40"
+            >
+              <option value="all">No filter</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
             </select>
             <svg
               viewBox="0 0 20 20"
