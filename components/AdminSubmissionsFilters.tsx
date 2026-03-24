@@ -73,7 +73,9 @@ export function AdminSubmissionsFilters({
   submissions: CardSubmission[];
 }) {
   const [datingPref, setDatingPref] = useState<"all" | "Men" | "Women" | "Both">("all");
-  const [location, setLocation] = useState<"all" | "Los Angeles" | "Sydney">("all");
+  const [location, setLocation] = useState<
+    "all" | "Los Angeles" | "Sydney" | "New York City" | "Melbourne"
+  >("all");
   const [ageGroup, setAgeGroup] = useState<
     "all" | "18-25" | "25-30" | "30-35" | "35-40"
   >("all");
@@ -220,7 +222,12 @@ export function AdminSubmissionsFilters({
               value={location}
               onChange={(e) =>
                 setLocation(
-                  e.target.value as "all" | "Los Angeles" | "Sydney",
+                  e.target.value as
+                    | "all"
+                    | "Los Angeles"
+                    | "Sydney"
+                    | "New York City"
+                    | "Melbourne",
                 )
               }
               className="w-full appearance-none rounded-2xl border border-white/20 bg-black/20 px-4 py-3 pr-10 text-sm text-white outline-none focus:border-white/40"
@@ -228,6 +235,8 @@ export function AdminSubmissionsFilters({
               <option value="all">No filter</option>
               <option value="Los Angeles">Los Angeles</option>
               <option value="Sydney">Sydney</option>
+              <option value="New York City">New York City</option>
+              <option value="Melbourne">Melbourne</option>
             </select>
             <svg
               viewBox="0 0 20 20"
@@ -478,7 +487,7 @@ export function AdminSubmissionsFilters({
                         <img
                           src={avatar}
                           alt={person.displayName || "Person photo"}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                         />
                       ) : (
                         <div className="h-full w-full bg-white/5" />
@@ -534,7 +543,7 @@ export function AdminSubmissionsFilters({
                           <img
                             src={avatar}
                             alt={person.displayName || "Person photo"}
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-contain"
                           />
                         ) : (
                           <div className="h-full w-full bg-white/5" />

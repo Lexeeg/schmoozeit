@@ -69,7 +69,12 @@ async function compressImage(file: File): Promise<File> {
   return new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
 }
 const MAX_PHOTOS = 1;
-const VALID_LOCATIONS = new Set(["Los Angeles", "Sydney"]);
+const VALID_LOCATIONS = new Set([
+  "Los Angeles",
+  "Sydney",
+  "New York City",
+  "Melbourne",
+]);
 
 function isValidDate(day: number, month: number, year: number): boolean {
   if (month < 1 || month > 12 || year < 1900 || year > new Date().getFullYear()) return false;
@@ -428,6 +433,8 @@ export default function SubmitPage() {
               <option value="">Select city</option>
               <option value="Los Angeles">Los Angeles</option>
               <option value="Sydney">Sydney</option>
+              <option value="New York City">New York City</option>
+              <option value="Melbourne">Melbourne</option>
             </select>
             <FieldError message={errors.livingLocation} />
           </div>

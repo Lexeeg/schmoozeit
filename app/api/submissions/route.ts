@@ -16,7 +16,12 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/heic",
   "image/heif",
 ]);
-const VALID_LOCATIONS = new Set(["Los Angeles", "Sydney"]);
+const VALID_LOCATIONS = new Set([
+  "Los Angeles",
+  "Sydney",
+  "New York City",
+  "Melbourne",
+]);
 const VALID_JEWISH_LEVELS = new Set([
   "Fully Observant",
   "Trad + Modern",

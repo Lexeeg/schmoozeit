@@ -36,7 +36,7 @@ export function AdminPhotoCarousel({
               <img
                 src={src}
                 alt={alt}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
                 style={{ imageOrientation: "from-image" }}
               />
             </div>
