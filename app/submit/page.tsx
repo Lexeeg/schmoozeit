@@ -150,7 +150,8 @@ export default function SubmitPage() {
 
     // Assemble phone with country code
     const phoneLocal = get("phoneLocal").replace(NON_DIGIT, "");
-    const codeDigits = countryCode === "+61" ? "61" : "1";
+    const codeDigits =
+      countryCode === "+61" ? "61" : countryCode === "+44" ? "44" : "1";
     const phoneNumber = phoneLocal ? `${codeDigits}${phoneLocal}` : "";
 
     const fields = {
@@ -184,6 +185,7 @@ export default function SubmitPage() {
     if (!phoneLocal) errs.phoneNumber = "Phone number is required.";
     else if (countryCode === "+1" && phoneLocal.length !== 10) errs.phoneNumber = "US number should be 10 digits.";
     else if (countryCode === "+61" && (phoneLocal.length < 9 || phoneLocal.length > 10)) errs.phoneNumber = "AU number should be 9-10 digits.";
+    else if (countryCode === "+44" && (phoneLocal.length < 10 || phoneLocal.length > 11)) errs.phoneNumber = "UK number should be 10-11 digits.";
 
     // Photo validation (client-side type/count checks — size handled by compression)
     const validPhotos = photos.filter((f) => f?.size > 0);
@@ -384,10 +386,17 @@ export default function SubmitPage() {
             >
               <option value="+1">+1</option>
               <option value="+61">+61</option>
+              <option value="+44">+44</option>
             </select>
             <input
               type="tel"
-              placeholder={countryCode === "+1" ? "(555) 123-4567" : "0412 345 678"}
+              placeholder={
+                countryCode === "+44"
+                  ? "07911 123456"
+                  : countryCode === "+61"
+                    ? "0412 345 678"
+                    : "(555) 123-4567"
+              }
               name="phoneLocal"
               required
               className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm placeholder:text-muted-foreground outline-none sm:px-4 sm:py-3 sm:text-base"
