@@ -77,6 +77,7 @@ function isValidPhone(phone: string): boolean {
   if (digits.length === 9) return true;
   if (digits.length === 10 && digits.startsWith("0")) return true;
   if (digits.length === 11 && digits.startsWith("61")) return true;
+  if (digits.startsWith("44") && digits.length >= 12 && digits.length <= 13) return true;
   return false;
 }
 
