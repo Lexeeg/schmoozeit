@@ -74,6 +74,8 @@ const VALID_LOCATIONS = new Set([
   "Sydney",
   "New York City",
   "Melbourne",
+  "London",
+  "Miami",
 ]);
 
 function isValidDate(day: number, month: number, year: number): boolean {
@@ -435,6 +437,8 @@ export default function SubmitPage() {
               <option value="Sydney">Sydney</option>
               <option value="New York City">New York City</option>
               <option value="Melbourne">Melbourne</option>
+              <option value="London">London</option>
+              <option value="Miami">Miami</option>
             </select>
             <FieldError message={errors.livingLocation} />
           </div>

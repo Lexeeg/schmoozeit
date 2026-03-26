@@ -28,6 +28,7 @@ type CardSubmission = {
   admin_notes: string | null;
   // legacy/global field (not used by the pair-specific lightbox)
   admin_setup_status?: SetupStatus;
+  admin_in_progress: boolean | null;
 };
 
 function inAgeGroup(age: number | null, group: string): boolean {
@@ -74,7 +75,7 @@ export function AdminSubmissionsFilters({
 }) {
   const [datingPref, setDatingPref] = useState<"all" | "Men" | "Women" | "Both">("all");
   const [location, setLocation] = useState<
-    "all" | "Los Angeles" | "Sydney" | "New York City" | "Melbourne"
+    "all" | "Los Angeles" | "Sydney" | "New York City" | "Melbourne" | "London" | "Miami"
   >("all");
   const [ageGroup, setAgeGroup] = useState<
     "all" | "18-25" | "25-30" | "30-35" | "35-40"
@@ -88,6 +89,20 @@ export function AdminSubmissionsFilters({
   const [setupStatusByToId, setSetupStatusByToId] = useState<
     Record<string, Exclude<SetupStatus, null>>
   >({});
+  const [inProgressUpdatingId, setInProgressUpdatingId] = useState<
+    string | null
+  >(null);
+  const [inProgressById, setInProgressById] = useState<
+    Record<string, boolean>
+  >({});
+
+  useEffect(() => {
+    const map: Record<string, boolean> = {};
+    for (const s of submissions) {
+      map[s.id] = s.admin_in_progress === true;
+    }
+    setInProgressById(map);
+  }, [submissions]);
 
   const filtered = useMemo(() => {
     return submissions.filter((s) => {
@@ -187,6 +202,39 @@ export function AdminSubmissionsFilters({
     }
   }
 
+  async function handleSetInProgress(id: string, next: boolean) {
+    setStatusError(null);
+    setInProgressUpdatingId(id);
+    try {
+      const res = await fetch(
+        `/api/submissions/${encodeURIComponent(id)}/in-progress`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ inProgress: next }),
+          credentials: "include",
+        },
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Reuse statusError spot in the lightbox for now.
+        setStatusError(
+          data?.details ||
+            data?.error ||
+            `Failed to save in progress (HTTP ${res.status}).`,
+        );
+        return;
+      }
+
+      setInProgressById((prev) => ({ ...prev, [id]: next }));
+      router.refresh();
+    } catch {
+      setStatusError("Network error. Please try again.");
+    } finally {
+      setInProgressUpdatingId(null);
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -237,7 +285,9 @@ export function AdminSubmissionsFilters({
                     | "Los Angeles"
                     | "Sydney"
                     | "New York City"
-                    | "Melbourne",
+                    | "Melbourne"
+                    | "London"
+                    | "Miami",
                 )
               }
               className="w-full appearance-none rounded-2xl border border-white/20 bg-black/20 px-4 py-3 pr-10 text-sm text-white outline-none focus:border-white/40"
@@ -247,6 +297,8 @@ export function AdminSubmissionsFilters({
               <option value="Sydney">Sydney</option>
               <option value="New York City">New York City</option>
               <option value="Melbourne">Melbourne</option>
+              <option value="London">London</option>
+              <option value="Miami">Miami</option>
             </select>
             <svg
               viewBox="0 0 20 20"
@@ -376,7 +428,11 @@ export function AdminSubmissionsFilters({
           {filtered.map((submission) => (
             <section
               key={submission.id}
-              className="flex h-full flex-col rounded-2xl bg-black/20 p-3 sm:p-4"
+              className={`flex h-full flex-col rounded-2xl bg-black/20 p-3 sm:p-4 border ${
+                inProgressById[submission.id]
+                  ? "border-white/70"
+                  : "border-transparent"
+              }`}
             >
               <div
                   className="mb-3 rounded-2xl p-2"
@@ -535,6 +591,8 @@ export function AdminSubmissionsFilters({
               const activeName = active.displayName || "Unnamed";
               const activeAgeLabel =
                 active.age !== null ? `, ${active.age}` : "";
+              const activeInProgress =
+                inProgressById[active.id] ?? active.admin_in_progress === true;
 
               const matchedPeople = submissions.filter((p) => {
                 if (p.id === notesForId) return false;
@@ -679,6 +737,20 @@ export function AdminSubmissionsFilters({
                     </div>
                     <button
                       type="button"
+                      disabled={inProgressUpdatingId === active.id}
+                      onClick={() =>
+                        void handleSetInProgress(active.id, !activeInProgress)
+                      }
+                      className={`rounded-full border px-4 py-1 text-sm font-semibold transition ${
+                        activeInProgress
+                          ? "border-white/80 bg-white/10 text-[#f3eadb]"
+                          : "border-white/20 bg-white/5 text-[#f3eadb]/70 hover:bg-white/10"
+                      } disabled:opacity-50`}
+                    >
+                      In progress
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setNotesForId(null)}
                       className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-[#f3eadb] hover:bg-white/15"
                     >
@@ -738,18 +810,31 @@ export function AdminSubmissionsFilters({
                     <div className="rounded-2xl border border-red-900/20 bg-[#f3eadb] p-4">
                       <div className="mb-2 flex items-baseline justify-between">
                         <p className="text-xs font-semibold uppercase tracking-wide text-[#530515]/70">
-                          Entire database
+                          Suggested matches
                         </p>
                         <p className="text-[11px] text-[#530515]/50">
-                          {submissions.length} total
+                          {submissions.filter(
+                            (p) =>
+                              p.id !== notesForId &&
+                              p.living_location === active.living_location &&
+                              p.level_of_jewish === active.level_of_jewish,
+                          ).length}{" "}
+                          of {submissions.length}
                         </p>
                       </div>
 
                       <div className="overflow-x-auto snap-x snap-mandatory">
                         <div className="flex gap-3 min-w-max">
-                          {submissions.map((person) => (
-                            <div key={person.id}>{renderDatabaseTile(person)}</div>
-                          ))}
+                          {submissions
+                            .filter(
+                              (p) =>
+                                p.id !== notesForId &&
+                                p.living_location === active.living_location &&
+                                p.level_of_jewish === active.level_of_jewish,
+                            )
+                            .map((person) => (
+                              <div key={person.id}>{renderDatabaseTile(person)}</div>
+                            ))}
                         </div>
                       </div>
                     </div>

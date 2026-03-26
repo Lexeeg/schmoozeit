@@ -21,6 +21,8 @@ const VALID_LOCATIONS = new Set([
   "Sydney",
   "New York City",
   "Melbourne",
+  "London",
+  "Miami",
 ]);
 const VALID_JEWISH_LEVELS = new Set([
   "Fully Observant",
