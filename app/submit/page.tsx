@@ -185,7 +185,7 @@ export default function SubmitPage() {
     if (!phoneLocal) errs.phoneNumber = "Phone number is required.";
     else if (countryCode === "+1" && phoneLocal.length !== 10) errs.phoneNumber = "US number should be 10 digits.";
     else if (countryCode === "+61" && (phoneLocal.length < 9 || phoneLocal.length > 10)) errs.phoneNumber = "AU number should be 9-10 digits.";
-    else if (countryCode === "+44" && (phoneLocal.length < 10 || phoneLocal.length > 11)) errs.phoneNumber = "UK number should be 10-11 digits.";
+    else if (countryCode === "+44" && phoneLocal.length !== 11) errs.phoneNumber = "UK number should be 11 digits.";
 
     // Photo validation (client-side type/count checks — size handled by compression)
     const validPhotos = photos.filter((f) => f?.size > 0);
