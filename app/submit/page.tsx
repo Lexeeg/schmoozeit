@@ -76,6 +76,7 @@ const VALID_LOCATIONS = new Set([
   "Melbourne",
   "London",
   "Miami",
+  "Brisbane",
 ]);
 
 function isValidDate(day: number, month: number, year: number): boolean {
@@ -429,7 +430,7 @@ export default function SubmitPage() {
         {/* Age Range */}
         <div className="space-y-3">
           <Label className="text-sm uppercase tracking-wide text-muted-foreground">Preferred age range</Label>
-          <Slider min={18} max={40} value={ageRange} onValueChange={(val) => setAgeRange(val as number[])} />
+          <Slider min={18} max={65} value={ageRange} onValueChange={(val) => setAgeRange(val as number[])} />
           <p className="text-sm">
             Current range: {ageRange[0]}–{ageRange[1]}
           </p>
@@ -447,6 +448,7 @@ export default function SubmitPage() {
               <option value="Melbourne">Melbourne</option>
               <option value="London">London</option>
               <option value="Miami">Miami</option>
+              <option value="Brisbane">Brisbane</option>
             </select>
             <FieldError message={errors.livingLocation} />
           </div>

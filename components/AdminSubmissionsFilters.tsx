@@ -45,6 +45,10 @@ function inAgeGroup(age: number | null, group: string): boolean {
       return age > 30 && age <= 35;
     case "35-40":
       return age > 35 && age <= 40;
+    case "40-50":
+      return age > 40 && age <= 50;
+    case "50-65":
+      return age > 50 && age <= 65;
     default:
       return true;
   }
@@ -75,10 +79,10 @@ export function AdminSubmissionsFilters({
 }) {
   const [datingPref, setDatingPref] = useState<"all" | "Men" | "Women" | "Both">("all");
   const [location, setLocation] = useState<
-    "all" | "Los Angeles" | "Sydney" | "New York City" | "Melbourne" | "London" | "Miami"
+    "all" | "Los Angeles" | "Sydney" | "New York City" | "Melbourne" | "London" | "Miami" | "Brisbane"
   >("all");
   const [ageGroup, setAgeGroup] = useState<
-    "all" | "18-25" | "25-30" | "30-35" | "35-40"
+    "all" | "18-25" | "25-30" | "30-35" | "35-40" | "40-50" | "50-65"
   >("all");
   const [jewishLevel, setJewishLevel] = useState<string>("all");
   const [longDistance, setLongDistance] = useState<"all" | "Yes" | "No">("all");
@@ -299,6 +303,7 @@ export function AdminSubmissionsFilters({
               <option value="Melbourne">Melbourne</option>
               <option value="London">London</option>
               <option value="Miami">Miami</option>
+              <option value="Brisbane">Brisbane</option>
             </select>
             <svg
               viewBox="0 0 20 20"
@@ -328,7 +333,9 @@ export function AdminSubmissionsFilters({
                     | "18-25"
                     | "25-30"
                     | "30-35"
-                    | "35-40",
+                    | "35-40"
+                    | "40-50"
+                    | "50-65",
                 )
               }
               className="w-full appearance-none rounded-2xl border border-white/20 bg-black/20 px-4 py-3 pr-10 text-sm text-white outline-none focus:border-white/40"
@@ -338,6 +345,8 @@ export function AdminSubmissionsFilters({
               <option value="25-30">25-30</option>
               <option value="30-35">30-35</option>
               <option value="35-40">35-40</option>
+              <option value="40-50">40-50</option>
+              <option value="50-65">50-65</option>
             </select>
             <svg
               viewBox="0 0 20 20"
